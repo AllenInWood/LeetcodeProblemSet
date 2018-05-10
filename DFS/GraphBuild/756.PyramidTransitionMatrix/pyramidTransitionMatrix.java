@@ -1,15 +1,11 @@
 class Solution {
     public boolean pyramidTransition(String bottom, List<String> allowed) {
-        if (allowed == null || allowed.size() == 0) {
-            return false;
-        }
         Map<String, List<String>> map = new HashMap<>();
         for (String s : allowed) {
-            String key = s.substring(0, 2);
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<>());
+            if (!map.containsKey(s.substring(0, 2))) {
+                map.put(s.substring(0, 2), new ArrayList<>());
             }
-            map.get(key).add(s.substring(2));
+            map.get(s.substring(0, 2)).add(s.substring(2));
         }
         return dfs(bottom, map);
     }
@@ -17,30 +13,27 @@ class Solution {
         if (bottom.length() == 1) {
             return true;
         }
-        for (int i = 0; i < bottom.length() - 1; i++) {
-            if (!map.containsKey(bottom.substring(i, i + 2))) {
-                return false;
-            }
-        }
         List<String> nexts = new ArrayList<>();
-        getList(nexts, bottom, map, 0, new StringBuilder());
+        getNexts(map, nexts, bottom, new StringBuilder(), 0);
         for (String next : nexts) {
             if (dfs(next, map)) {
                 return true;
             }
         }
         return false;
-     }
-    private void getList(List<String> nexts, String bottom,
-                         Map<String, List<String>> map, int idx, StringBuilder sb) {
+    }
+    private void getNexts(Map<String, List<String>> map, List<String> nexts,
+                          String bottom, StringBuilder sb, int idx) {
         if (idx == bottom.length() - 1) {
             nexts.add(sb.toString());
             return;
         }
-        for (String s : map.get(bottom.substring(idx, idx + 2))) {
-            sb.append(s);
-            getList(nexts, bottom, map, idx + 1, sb);
-            sb.deleteCharAt(sb.length() - 1);
+        if (map.containsKey(bottom.substring(idx, idx + 2))) {
+            for (String s : map.get(bottom.substring(idx, idx + 2))) {
+                sb.append(s);
+                getNexts(map, nexts, bottom, sb, idx + 1);
+                sb.deleteCharAt(sb.length() - 1);
+            }
         }
     }
 }
